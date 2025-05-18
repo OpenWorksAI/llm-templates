@@ -2,14 +2,14 @@ services:
   ollama:
     image: docker.io/ollama/ollama:latest
     ports:
-      - 11434:11434
+      - 11433:11434
     volumes:
       - .:/code
       - ./ollama/ollama:/root/.ollama
     container_name: ollama
     pull_policy: always
     tty: true
-    restart: always
+    restart: unless-stopped
     environment:
       - OLLAMA_KEEP_ALIVE=24h
       - OLLAMA_HOST=0.0.0.0
@@ -25,7 +25,7 @@ services:
     ports:
       - 8080:8080
     environment: # https://docs.openwebui.com/getting-started/env-configuration#default_models
-      - OLLAMA_BASE_URLS=http://host.docker.internal:11434 #comma separated ollama hosts
+      - OLLAMA_BASE_URLS=http://host.docker.internal:11433 #comma separated ollama hosts
       - ENV=dev
       - WEBUI_AUTH=False
       - WEBUI_NAME=valiantlynx AI
@@ -37,13 +37,13 @@ services:
     networks:
       - backend
   ollama-service:
-    image: sajethoffice/ollama-service:0.0.1
+    image: sajethoffice/ollama-service:0.0.2
     ports:
       - "8000:8000"
     environment:
       llama.api: http://host.docker.internal
-      llama.port: 11434
-    restart: unless-stopped
+      llama.port: 11433
+    restart: always
     container_name: ollama-service
     depends_on:
       - ollama
